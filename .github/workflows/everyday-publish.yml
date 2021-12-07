@@ -17,12 +17,23 @@ jobs:
           repository: yzhang-gh/vscode-markdown
           token: ${{ github.token }}
           path: vscode-markdown
-      - uses: actions/setup-python@v2
+      - name: Setup Python environment
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          cache: "npm"
       - name: Run script
         run: |
           python3 grammarless-vscode-markdown/modify.py --file vscode-markdown/package.json --republish
+      - name: Install dependencies
+        run: |
+          cd vscode-markdown
+          npm ci
+          cd ..
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v0
         with:
