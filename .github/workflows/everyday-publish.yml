@@ -1,0 +1,31 @@
+name: everyday-publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone this repository
+        uses: actions/checkout@v2
+        with:
+          path: grammarless-vscode-markdown
+      - name: Clone other repository
+        uses: actions/checkout@v2
+        with:
+          repository: yzhang-gh/vscode-markdown
+          token: ${{ github.token }}
+          path: vscode-markdown
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Run script
+        run: |
+          python3 grammarless-vscode-markdown/modify.py --file vscode-markdown/package.json --republish
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v0
+        with:
+          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          registryUrl: https://marketplace.visualstudio.com
+          packagePath: 'vscode-markdown'
