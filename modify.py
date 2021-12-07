@@ -1,11 +1,13 @@
 import json
 import argparse
+import os
+import glob
 
 parser = argparse.ArgumentParser(
     description="Remove grammars from a package.json file."
 )
 parser.add_argument(
-    "--file", default="package.json", help="The package.json file to modify."
+    "--dir", default=".", help="The directory containing manifest files to modify."
 )
 parser.add_argument(
     "--republish",
@@ -14,21 +16,38 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-with open(args.file, "r") as f:
-    data = json.load(f)
+path = os.path.join(args.dir, "package.json")
 
-del data["contributes"]["grammars"]
+with open(path, "r", encoding="utf-8") as f:
+    manifest = json.load(f)
+
+del manifest["contributes"]["grammars"]
 
 if args.republish:
-    data["name"] = "grammarless-markdown-all-in-one"
-    del data["icon"]
-    data["publisher"] = "jonathanjameswatson"
-    data["bugs"][
+    manifest["name"] = "grammarless-markdown-all-in-one"
+    del manifest["icon"]
+    manifest["publisher"] = "jonathanjameswatson"
+    manifest["bugs"][
         "url"
     ] = "https://github.com/jonathanjameswatson/grammarless-vscode-markdown/issues"
-    data["repository"][
+    manifest["repository"][
         "url"
     ] = "https://github.com/jonathanjameswatson/grammarless-vscode-markdown"
 
-with open(args.file, "w") as f:
-    json.dump(data, f, indent=4)
+with open(path, "w", encoding="utf-8") as f:
+    json.dump(manifest, f, indent=4, ensure_ascii=False)
+
+if args.republish:
+    for path_end in glob.glob("package.nls.*json", root_dir=args.dir):
+        path = os.path.join(args.dir, path_end)
+
+        with open(path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+
+        manifest["ext.displayName"] = "Grammarless " + manifest["ext.displayName"]
+        manifest["ext.description"] = (
+            "(No grammar contributions) " + manifest["ext.description"]
+        )
+
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=4, ensure_ascii=False)
