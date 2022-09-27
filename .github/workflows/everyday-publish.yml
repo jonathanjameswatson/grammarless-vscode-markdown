@@ -2,6 +2,11 @@ name: everyday-publish
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: The version of the grammarless extension
+        required: true
+        type: string
 
 jobs:
   publish:
@@ -29,7 +34,7 @@ jobs:
           cache-dependency-path: vscode-markdown/package-lock.json
       - name: Run script
         run: |
-          python3 grammarless-vscode-markdown/modify.py --dir vscode-markdown --republish
+          python3 grammarless-vscode-markdown/modify.py --dir vscode-markdown --republish --version "${{ github.event.inputs.message }}"
       - name: Install dependencies
         run: |
           cd vscode-markdown

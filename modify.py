@@ -14,6 +14,10 @@ parser.add_argument(
     action="store_true",
     help="Whether other manifest options should be changed for republishing.",
 )
+parser.add_argument(
+    "--version",
+    help="The version of the grammarless extension.",
+)
 args = parser.parse_args()
 
 path = os.path.join(args.dir, "package.json")
@@ -33,6 +37,9 @@ if args.republish:
     manifest["repository"][
         "url"
     ] = "https://github.com/jonathanjameswatson/grammarless-vscode-markdown"
+
+if args.version:
+    manifest["version"] = args.version
 
 with open(path, "w", encoding="utf-8") as f:
     json.dump(manifest, f, indent=4, ensure_ascii=False)
