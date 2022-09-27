@@ -34,7 +34,7 @@ jobs:
           cache-dependency-path: vscode-markdown/package-lock.json
       - name: Run script
         run: |
-          python3 grammarless-vscode-markdown/modify.py --dir vscode-markdown --republish --version "${{ github.event.inputs.message }}"
+          python3 grammarless-vscode-markdown/modify.py --dir vscode-markdown --republish --version "${{ github.event.inputs.version }}"
       - name: Install dependencies
         run: |
           cd vscode-markdown
